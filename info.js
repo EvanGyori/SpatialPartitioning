@@ -6,7 +6,7 @@ unit[0] = {x: 10, y: 10, r: 10, vx: 0, vy: 0};
 unit[1] = {x: -30, y: -30, r: 20, vx: 0, vy: 0};
 unit[2] = {x: -300, y: 240, r: 300, vx: 0, vy: 0};
 unit[3] = {x: 0, y: -2000, r: 800, vx: 0, vy: 0};
-var gravity = 0.99; //Slowing down rate
+var gravity = 1; //0.99; //Slowing down rate
 
 var key = {};
 var mouse = {
