@@ -1,3 +1,5 @@
+<p align="center"> <img src="https://github.com/EvanGyori/SpatialPartitioning/assets/30540753/dcde6c17-569f-441a-9357-fa26a0d16940"> </p>
+
 # Spatial Partitioning
 Put this project onto github for the purposes of archiving old projects. Made in 2019.
 
