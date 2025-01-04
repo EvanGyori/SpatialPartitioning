@@ -1,35 +1,50 @@
 var possUnit = 0; //possessed particle
+var squareSize = 25;
+var worldSize = 8000;
 
 var squares = [];
 
 setInterval(function() {
+  console.time();
   velocity();
   movement();
   createCollisionBoundary();
   collision();
   drawCanvas();
+  console.timeEnd();
 }, 10);
 
 function drawCanvas() {
   cnv.width = window.innerWidth;
   cnv.height = window.innerHeight;
 
-  ctx.clearRect(0, 0, cnv.width, cnv.height);
-
-  //Draw grid
-  // for(x=-1000; x<=2000; x+= 250) {
-  //   for(y=-1000; y<2000; y+= 250) {
-  //     ctx.rect(x-unit[possUnit].x, y-unit[possUnit].y, 250, 250);
-  //     ctx.stroke();
-  //     }
-  //   }
+  //ctx.clearRect(0, 0, cnv.width, cnv.height);
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, cnv.width, cnv.height);
 
   //Draw circles
+  ctx.fillStyle = "white";
   for(i=0; i<unit.length; i++) {
-    ctx.beginPath();
-    ctx.arc(unit[i].x+cnv.width/2-unit[possUnit].x, unit[i].y+cnv.height/2-unit[possUnit].y, unit[i].r, 0, 2*Math.PI);
-    ctx.stroke();
+	var x = unit[i].x+cnv.width/2-unit[possUnit].x;
+	var y = unit[i].y+cnv.height/2-unit[possUnit].y;
+	var r = unit[i].r;
+	if (x + r >= 0 && x - r <= cnv.width && y + r >= 0 && y - r <= cnv.height) {
+	    ctx.beginPath();
+	    ctx.arc(x, y, r, 0, 2*Math.PI);
+	    ctx.fill();
+	}
   }
+  
+/*
+  //Draw grid
+  ctx.strokeStyle = "yellow";
+  for(x=0; x<worldSize; x+= squareSize) {
+    for(y=0; y<worldSize; y+= squareSize) {
+		ctx.rect(x-unit[possUnit].x, y-unit[possUnit].y, squareSize, squareSize);
+		ctx.stroke();
+	}
+  }
+*/
 }
 
 function velocity() {
@@ -51,8 +66,8 @@ function velocity() {
   }
 
   //Boulder
-  if (unit[2].vx < 5) {
-    unit[2].vx += 0.1;
+  if (unit[0].vx < 5) {
+    //unit[0].vx += 0.1;
   }
 }
 
@@ -62,35 +77,56 @@ function movement() {
     unit[i].x += unit[i].vx; //Move in dir of velocity
     unit[i].y += unit[i].vy;
     if (unit[i].vx != 0) {unit[i].vx *= gravity;}
-    if (unit[i].vy != 0) {unit[i].vy *= gravity;}
+    if (unit[i].vy != 0) {unit[i].vy *= gravity; }//unit[i].vy += 1;}
     if (Math.abs(unit[i].vx) < 0.01 && Math.abs(unit[i].vx) > 0) {unit[i].vx = 0;}
     if (Math.abs(unit[i].vy) < 0.01 && Math.abs(unit[i].vy) > 0) {unit[i].vy = 0;}
   }
 }
 
 function createCollisionBoundary() { //dividing up entire space into a number of squares and only checking for collision in those squares also test nearby squares
-  //square size = 250
+  //square size = squareSize
   //play area is (-1000, -1000) to (2000, 2000)
   squares = []; //resets info
 
-  for(x=-1000; x<=2000; x+= 250) { //12 squares per row
-    for(y=-1000; y<2000; y+= 250) {
+/*
+  for(x=0; x<=worldSize; x+= squareSize) { //12 squares per row
+    for(y=0; y<worldSize; y+= squareSize) {
       squares[squares.length] = [];
       for (i=0; i<unit.length; i++) {
-        if (unit[i].x+unit[i].r >= x && unit[i].x-unit[i].r <= x+250 && unit[i].y+unit[i].r >= y && unit[i].y-unit[i].r <= y+250) {
+        if (unit[i].x+unit[i].r >= x && unit[i].x-unit[i].r <= x+squareSize && unit[i].y+unit[i].r >= y && unit[i].y-unit[i].r <= y+squareSize) {
           squares[squares.length-1][squares[squares.length-1].length] = i;
         }
       }
     }
   }
+*/
+
+	var numSquaresHorizontal = worldSize / squareSize;
+	var numSquares = numSquaresHorizontal * numSquaresHorizontal;
+	for (i = 0; i < numSquares; i++) {
+		squares[i] = [];
+	}
+
+	for (i = 0; i < unit.length; i++) {
+		l = Math.max(0, Math.floor((unit[i].x - unit[i].r) / squareSize));
+		r = Math.min(numSquaresHorizontal - 1, Math.floor((unit[i].x + unit[i].r) / squareSize));
+		t = Math.max(0, Math.floor((unit[i].y - unit[i].r) / squareSize));
+		b = Math.min(numSquaresHorizontal - 1, Math.floor((unit[i].y + unit[i].r) / squareSize));
+		for (x = l; x <= r; x++) {
+			for (y = t; y <= b; y++) {
+				j = x + y * worldSize / squareSize;
+				squares[j][squares[j].length] = i;
+			}
+		}
+	}
 }
 
 function collision() {
   for (i=0; i<unit.length; i++) {
-    if (unit[i].x < -1000) {unit[i].x = -1000; unit[i].vx = -unit[i].vx;}
-    if (unit[i].x > 2000) {unit[i].x = 2000; unit[i].vx = -unit[i].vx;}
-    if (unit[i].y < -1000) {unit[i].y = -1000; unit[i].vy = -unit[i].vy;}
-    if (unit[i].y > 2000) {unit[i].y = 2000; unit[i].vy = -unit[i].vy;}
+    if (unit[i].x < 0) {unit[i].x = 0; unit[i].vx = -unit[i].vx;}
+    if (unit[i].x > worldSize) {unit[i].x = worldSize; unit[i].vx = -unit[i].vx;}
+    if (unit[i].y < 0) {unit[i].y = 0; unit[i].vy = -unit[i].vy;}
+    if (unit[i].y > worldSize) {unit[i].y = worldSize; unit[i].vy = -unit[i].vy;}
   }
 
   for (i=0; i<squares.length; i++) {
@@ -101,11 +137,17 @@ function collision() {
             var id = squares[i][c];
             var id2 = squares[i][c2];
 
-            if (Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y) <= unit[id].r+unit[id2].r) {
+		var dx = unit[id].x - unit[id2].x;
+		var dy = unit[id].y - unit[id2].y;
+		var distSqr = dx * dx + dy * dy;
+		var rTot = unit[id].r + unit[id2].r;
+            //if (Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y) <= unit[id].r+unit[id2].r) {
+	if (distSqr <= rTot * rTot) {
               var angle = Math.atan2(unit[id].x - unit[id2].x, -(unit[id].y - unit[id2].y)) - Math.PI/2;
 
               //Static Collision
-              var distance = Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y);
+		var distance = Math.sqrt(distSqr);
+              //var distance = Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y);
 
               var overlapDis = (distance - unit[id].r - unit[id2].r)/2;
 
@@ -138,8 +180,10 @@ function collision() {
 
               //Dynamic Collison
               //Normal Vectors
-              var nx = (unit[id2].x - unit[id].x) / Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y);
-              var ny = (unit[id2].y - unit[id].y) / Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y);
+              //var nx = (unit[id2].x - unit[id].x) / Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y);
+              //var ny = (unit[id2].y - unit[id].y) / Math.dist(unit[id].x, unit[id].y, unit[id2].x, unit[id2].y);
+		var nx = dx / distance;
+		var ny = dy / distance;
 
               //Tangetal Vectors
               var tx = -ny;

@@ -2,11 +2,11 @@ var cnv = document.getElementById('gameCanvas');
 var ctx = cnv.getContext('2d');
 
 var unit = [];
-unit[0] = {x: 10, y: 10, r: 10, vx: 0, vy: 0};
-unit[1] = {x: -30, y: -30, r: 20, vx: 0, vy: 0};
-unit[2] = {x: -300, y: 240, r: 300, vx: 0, vy: 0};
-unit[3] = {x: 0, y: -2000, r: 800, vx: 0, vy: 0};
-var gravity = 1; //0.99; //Slowing down rate
+//unit[0] = {x: 10, y: 10, r: 10, vx: 0, vy: 0};
+//unit[1] = {x: -30, y: -30, r: 20, vx: 0, vy: 0};
+unit[0] = {x: 1500, y: 3400, r: 200, vx: 0, vy: 0};
+//unit[3] = {x: 0, y: -2000, r: 800, vx: 0, vy: 0};
+var gravity = 0.99; //Should be called friction
 
 var key = {};
 var mouse = {
@@ -15,11 +15,15 @@ var mouse = {
 }
 
 //Creates all circles
-for (x=100; x<2000; x+=10 ) {
-  for(y=100; y<400; y+=10) {
+
+for (x=100; x<3000; x+=10 ) {
+  for(y=100; y<3000; y+=10) {
     unit[unit.length] = {x: x, y: y, r: 4, vx: 0, vy: 0};
   }
 }
+
+
+console.log("Created " + unit.length + " balls");
 
 //keys
 $(function() {

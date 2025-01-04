@@ -3,9 +3,9 @@
 # Spatial Partitioning
 Put this project onto github for the purposes of archiving old projects. Made in 2019.
 
-## Overview
-Control a circle using WASD and collide with 5000 circles.
+Added some optimization and color changes. Originally could only handle 5,000 circles but can now handle 84,000 at 70 FPS on my computer.
 
+## Overview
 Made this project because I wanted to learn how to make a simple physics engine with circles colliding. The circles conserve momentum and displace the other circles. I also wanted to figure out how to optimize the code so that thousands of circles could collide without slowing down the computer too much and I did that through spatial partitioning.
 
 ## Usage
